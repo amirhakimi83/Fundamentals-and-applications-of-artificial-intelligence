@@ -1,0 +1,66 @@
+from node import Node
+from algorithms.common import find_possible_moves
+from time import process_time
+
+
+class DFS:
+    def __init__(self, world):
+        self.emptyNode = Node(None, None, "first father", -1, 0, 0, 0)
+        self.firstNode = Node(world, self.emptyNode, " ", 0, 0, 0, 0)
+        self.kirbyPos = self.firstNode.searchForKirby()
+        self.stack = [self.firstNode]
+        self.computingTime = ""
+
+    def getComputingTime(self):
+        return self.computingTime
+
+    def setComputingTime(self, computingTime):
+        self.computingTime = computingTime
+
+    def dfs(self, start, visited):
+        if start not in visited:
+            visited.append(start)
+            possible_moves = find_possible_moves(start)
+            for move in possible_moves:
+                if move not in visited:
+                    self.dfs(move, visited)
+
+    def start(self):
+        startTime = process_time()
+        expandedNodes = 0
+        depth = 0
+
+        # TODO: define required variables here
+        visited = [self.stack[0]]
+        currentNode = self.stack.pop(0)
+
+        while not currentNode.isGoal():
+            possible_moves = find_possible_moves(currentNode)
+            for move in possible_moves:
+                # TODO: Implement your code here
+                if move not in visited:
+                    visited.append(move)
+                    self.stack.append(move)
+                # Don't alter this
+                if move.getDepth() > depth:
+                    depth = move.getDepth()
+
+            # TODO: Implement your code here
+            currentNode = self.stack.pop()
+
+            # Don't alter this
+            expandedNodes += 1
+
+        # Don't alter this
+        elapsedTime = process_time() - startTime
+        elapsedTimeFormatted = "%.10f s." % elapsedTime
+        self.setComputingTime(elapsedTimeFormatted)
+
+        solution = currentNode.recreateSolutionWorld()
+        solutionWorld = solution[::-1]
+        print("Expanded nodes: ", expandedNodes + 1)  # Good
+        print("Depth: ", depth)
+        print("The final cost of the solution is: " + str(currentNode.getCost()))
+        print(currentNode.recreateSolution())
+        return [solutionWorld, expandedNodes + 1, depth]
+
